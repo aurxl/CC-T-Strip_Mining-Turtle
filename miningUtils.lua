@@ -182,8 +182,15 @@ function returnStrip (blocks)
     turtle.turnRight()
 
     for i=1, blocks, 1 do
+        local success, block = turtle.inspect()
+        if success then
+            while block_gravel.name == "minecraft:gravel" do
+                turtle.dig()
+                success_gravel, block_gravel = turtle.inspect()
+            end
+            turtle.dig()
+        end
         turtle.forward()
-        refuel()
     end
 end
 
@@ -297,6 +304,8 @@ function stripMine (depth, width, dropStone, shaftHight, placeTorch, torchSlot, 
         if dropStone then
             dropStonef()
         end
+
+        refuel()
 
         local not_moved_blocks, bool_blocks = digShaft(width, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, width, torch_distance )
         returnStrip(width - ( width - not_moved_blocks))
