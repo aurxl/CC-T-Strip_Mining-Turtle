@@ -1,14 +1,17 @@
 # CC-T-Strip_Mining-Turtle
 type: quick shot
 
-## description
+## Description
 Most of the code was written in one night around 3 a.m. with the power of a lot of Club Mate. So dont expect clean, efficient and readable code.
+
+This lua script was written for [CC:Tweaked](https://www.modrinth.com/mod/cc-tweaked) it may also work for other CC Mods.
 
 With this lua script, the turtle will mine ressources at any level with the good old strip mining technique.
 Btw. the turtle works best with a chunk loader. (Fabric mod: [Turtlematic](https://modrinth.com/mod/turtlematic) / Forge mod: [Advanced Peripherals](https://modrinth.com/mod/advancedperipherals))
 
 ## Features
 - strip mining
+- turtle follows ore veins to make sure to get all of the important ressources
 - configure Length of main and sub shaft
 - place torches
 - place chests
