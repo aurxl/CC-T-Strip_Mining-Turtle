@@ -1,6 +1,5 @@
 require ".utils"
 require ".miningUtils"
-require ".inventoryUtils"
 require ".config"
 
 print('starting', os.getComputerLabel(), 'for stripmining\n\nFace Turtle to north!\n')

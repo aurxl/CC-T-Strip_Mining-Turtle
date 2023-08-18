@@ -19,8 +19,8 @@ chestSlot=2
     Depth: length in number of blocks of the main shaft
     Width: length in number of blocks of the sub shafts
 ]]
-miningDepth=40
-miningWidth=15
+miningDepth=100
+miningWidth=20
 
 --[[ 
     choose between 2 and 3

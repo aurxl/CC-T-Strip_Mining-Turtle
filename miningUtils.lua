@@ -1,7 +1,9 @@
-require ".inventoryUtils"
 require ".utils"
 
 items_valuable = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore", "minecraft:iron_ore", "minecraft:deepslate_iron_ore", "minecraft:gold_ore", "minecraft:deepslate_gold_ore", "minecraft:diamond_ore", "minecraft:deepslate_diamond_ore", "create:zinc_ore", "minecraft:lapis_ore", "minecraft:deepslate_lapis_ore"}
+
+items_to_drop = {"minecraft:cobblestone", "minecraft:cobbled_deepslate", "minecraft:mossy_cobblestonethen", "minecraft:granite", "minecraft:gravel", "minecraft:dirt", "minecraft:tuff", "minecraft:andesite"}
+
 path = {}
 mk = 0
 
@@ -35,16 +37,13 @@ function setup (direction, down)
 end
 
 function mv_back ()
-    print(path[#path])
     if path[#path] == "front" then
         turtle.back()
         table.remove(path, #path)
         if path[#path] == "right" then
-            print(path[#path])
             turtle.turnLeft()
             table.remove(path, #path)
         elseif path[#path] == "left" then
-            print(path[#path])
             turtle.turnRight()
             table.remove(path, #path)
         end
@@ -126,15 +125,13 @@ function check_value ()
     return false
 end
 
-function digShaft (blocks, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, shaft_distance, torch_gap)
-    blocks = blocks or 1
-    ii = 0
+function digShaft (blocks, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, shaft_distance, torch_gap, stripType)
+    local blocks = blocks or 1
+    local not_moved_blocks
 
     for i=1, blocks, 1 do
-        ii = i
         --turtle.forward()
-        -- print("i ", i, " blocks ", blocks)
-
+        not_moved_blocks = i
         if turtle.detect() then
             turtle.dig()
             local success_gravel, block_gravel = turtle.inspect() 
@@ -145,7 +142,7 @@ function digShaft (blocks, shaftHight, placeTorch, torchSlot, placeChest, chestS
         end
         if turtle.detectDown() then
             local success_torch, block_torch = turtle.inspectDown()
-            if block_torch ~= "minecraft:torch" then
+            if block_torch.name ~= "minecraft:torch" then
                 turtle.digDown()
             end
         end
@@ -155,13 +152,15 @@ function digShaft (blocks, shaftHight, placeTorch, torchSlot, placeChest, chestS
                 turtle.digUp()
                 successUp, blockUp = turtle.inspectUp()
             end
-            if shaftHight == 3 and blockUp ~= "minecraft:chest" then
+            if shaftHight == 3 and blockUp.name ~= "minecraft:chest" then
                 turtle.digUp()
             end
         end
 
-        if ( (shaft_distance % torch_gap) == 0) and placeTorch and i ~= 1 then
-            place_Torch(torchSlot)
+        if ( (shaft_distance % torch_gap) == 0) and placeTorch then
+            if stripType == "main" or (stripType == "sub" and i ~= 1) then
+                place_Torch(torchSlot)
+            end
         end
 
         turtle.forward()
@@ -174,7 +173,7 @@ function digShaft (blocks, shaftHight, placeTorch, torchSlot, placeChest, chestS
         mk = 0
         shaft_distance = shaft_distance - 1
     end
-    do return ii, true end
+    do return not_moved_blocks, true end
 end
 
 function returnStrip (blocks)
@@ -184,9 +183,9 @@ function returnStrip (blocks)
     for i=1, blocks, 1 do
         local success, block = turtle.inspect()
         if success then
-            while block_gravel.name == "minecraft:gravel" do
+            while block.name == "minecraft:gravel" do
                 turtle.dig()
-                success_gravel, block_gravel = turtle.inspect()
+                success, block = turtle.inspect()
             end
             turtle.dig()
         end
@@ -219,7 +218,7 @@ function place_Torch(torchSlot)
     turtle.select(torchSlot)
     local torch = turtle.getItemDetail(torchSlot)
     if not torch then
-        print("not torch in torch slot(",torchSlot,")")
+        print("no torch in torch slot(",torchSlot,")")
         choiceBool("Continue?")
     elseif torch.name ~= "minecraft:torch" then
         print("no torch in torch slot(", torchSlot, ")")
@@ -255,10 +254,10 @@ function inventoryToChest(chestSlot)
                 successUp, blockUp = turtle.inspectUp()
             end
             turtle.digUp()
-        turtle.Up()
+        end
+        turtle.up()
         turtle.digUp()
         turtle.down()
-        end
         turtle.placeUp()
         for i=1, 16, 1 do
             item = turtle.getItemDetail(i)
@@ -275,10 +274,22 @@ function inventoryToChest(chestSlot)
     else
         -- waiting for chests
         print("waiting for chests! (chest slot: ", chestSlot, ")")
-        while chest ~= "minecraft:chest" do
+        while chest.name ~= "minecraft:chest" do
             turtle.select(chestSlot)
             chest = turtle.getItemDetail()
             sleep(2)
+        end
+    end
+end
+
+function dropStonef ()
+    for i=1, 16, 1 do
+        item = turtle.getItemDetail(i)
+        if item then
+            if has_value(items_to_drop, item.name ) then
+                turtle.select(i)
+                turtle.drop()
+            end
         end
     end
 end
@@ -293,12 +304,11 @@ function stripMine (depth, width, dropStone, shaftHight, placeTorch, torchSlot, 
 
     for i=depth, 1, -shaft_distance do
         refuel()
-
-        digShaft(shaft_distance, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, depth, 8)
+        digShaft(shaft_distance, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, i, 8, "main")
 
         turtle.turnLeft()
 
-        local not_moved_blocks, bool_blocks = digShaft(width, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, width, torch_distance )
+        local not_moved_blocks, bool_blocks = digShaft(width, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, width, torch_distance, "sub")
         returnStrip(width - ( width - not_moved_blocks))
 
         if dropStone then
@@ -307,7 +317,7 @@ function stripMine (depth, width, dropStone, shaftHight, placeTorch, torchSlot, 
 
         refuel()
 
-        local not_moved_blocks, bool_blocks = digShaft(width, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, width, torch_distance )
+        local not_moved_blocks, bool_blocks = digShaft(width, shaftHight, placeTorch, torchSlot, placeChest, chestSlot, width, torch_distance, "sub")
         returnStrip(width - ( width - not_moved_blocks))
         turtle.turnRight()
 
