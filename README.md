@@ -9,6 +9,18 @@ This lua script was written for [CC:Tweaked](https://www.modrinth.com/mod/cc-twe
 With this lua script, the turtle will mine ressources at any level with the good old strip mining technique.
 Btw. the turtle works best with a chunk loader. (Fabric mod: [Turtlematic](https://modrinth.com/mod/turtlematic) / Forge mod: [Advanced Peripherals](https://modrinth.com/mod/advancedperipherals))
 
+## Installation
+Get the installer:
+```sh
+wget https://raw.githubusercontent.com/aurxl/CC-T-Strip_Mining-Turtle/main/installer.lua
+```
+
+execute installer.lua
+```sh
+./installer.lua
+```
+Files will be downloaded to the current directory.
+
 ## Features
 - strip mining
 - turtle follows ore veins to make sure to get all of the important ressources
