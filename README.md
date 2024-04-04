@@ -1,8 +1,8 @@
 # CC-T-Strip_Mining-Turtle
-type: quick shot
+
 
 ## Description
-Most of the code was written in one night around 3 a.m. with the power of a lot of Club Mate. So dont expect clean, efficient and readable code.
+Most of the code was written in one night around 3 a.m. with the power of a lot of Mate. So dont expect clean, efficient and readable code.
 
 This lua script was written for [CC:Tweaked](https://www.modrinth.com/mod/cc-tweaked) it may also work for other CC Mods.
 
